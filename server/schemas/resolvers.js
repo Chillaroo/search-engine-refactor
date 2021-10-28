@@ -34,7 +34,7 @@ const resolvers = {
             const user = await User.create({ username, email, password });
             const token = signToken(user);
 
-            return { token, profile };
+            return { token, user };
         },
 
         saveBook: async (parent, { bookId, authors, description, title, image, link }) => {
