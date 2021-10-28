@@ -1,39 +1,54 @@
-// typeDefs.js: Define the necessary Query and Mutation types:
-const { gql } = require('apollo-server-express');
+const { AuthenticationError } = require('apollo-server-express');
+const { User } = require('../models');
+const { updateOne } = require('../models/User');
+const { signToken } = require('../utils/auth');
 
-const typeDefs = gql`
-    type Query {
-        me: User
-    }
+const resolvers = {
+    Query: {
+        profiles: async () => {
+            return Profile.find();
+        },
 
-    type User {
-        _id: ID
-        username: String
-        email: String
-        bookCount: Int
-        savedBooks: [Book]
-    }
+        profile: async (parent, { profileId }) => {
+            return Profile.findOne({ _id: profileId });
+        },
+    },
 
-    type Book{
-        bookId: String
-        authors: [String]
-        description: String
-        title: String
-        image: String
-        link: String
-    }
+    login: async (parent, { email, password }) => {
+        const user = await User.findOne({ email });
 
-    Auth type:{
-        token: ID!
-        user: User
-    }
+        if (!user) {
+            throw new AuthenticationError('No user with this email found!');
+        }
 
-    type Mutation {
-        login(username: String!, email: String!, password: String!): Auth
-        addUser(username: String!, email: String!, password: String!): Auth
-        saveBook(authers: [String], description: String, title: String, bookId: String, image: String, link: String): User
-        removeBook(bookID: String): User
-    }
-`;
+        const correctPw = await user.isCorrectPassword(password);
 
-module.exports = typeDefs;
+        if (!correctPw) {
+            throw new AuthenticationError('Incorrect password!');
+        }
+
+        const token = signToken(user);
+        return { token, user };
+    },
+
+    Mutation: {
+        addUser: async (parent, { username, email, password }) => {
+            const user = await User.create({ username, email, password });
+            const token = signToken(user);
+
+            return { token, profile };
+        },
+
+        saveBook: async (parent, { bookId, authors, description, title, image, link }) => {
+            const book = { bookId, authors, description, title, image, link };
+            return updateOne.User({$addToSet: {savedBooks: book}});
+        },
+
+        removeBook: async (parent, { bookId }) => {
+            return updateOne.User({ $pull: { savedBooks: bookId }});
+        },
+    },
+};
+
+module.exports = resolvers;
+
