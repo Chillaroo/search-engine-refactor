@@ -2,13 +2,18 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 
-import { loginUser } from '../utils/API';
+//import { loginUser } from '../utils/API';
 import Auth from '../utils/auth';
+
+import {gql, useMutation} from '@apollo/client';
+import {LOGIN_USER} from '../utils/mutations.js';
 
 const LoginForm = () => {
   const [userFormData, setUserFormData] = useState({ email: '', password: '' });
   const [validated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+
+  const [loginUser, {error, data}] = useMutation(LOGIN_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -24,17 +29,24 @@ const LoginForm = () => {
       event.preventDefault();
       event.stopPropagation();
     }
-
+    console.log(userFormData);
     try {
-      const response = await loginUser(userFormData);
+      console.log('IN THE TRY BLOCK')
+      const { data } = await loginUser({
+        variables: {...userFormData}
+      });
+      console.log('LOGIN MUTATION WORKED');
+      Auth.login(data.login.token);
+      console.log('AUTHORIZATION WORKED');
+      // const response = await loginUser(userFormData);
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
+      // if (!response.ok) {
+      //   throw new Error('something went wrong!');
+      // }
 
-      const { token, user } = await response.json();
-      console.log(user);
-      Auth.login(token);
+      // const { token, user } = await response.json();
+      // console.log(user);
+      // Auth.login(token);
     } catch (err) {
       console.error(err);
       setShowAlert(true);
