@@ -23,7 +23,7 @@ const typeDefs = gql`
         link: String
     }
 
-    Auth type:{
+    type Auth{
         token: ID!
         user: User
     }
