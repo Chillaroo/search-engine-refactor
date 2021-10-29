@@ -70,9 +70,11 @@ const SearchBooks = () => {
     }
 
     try {
+      console.log("IN THE TRY BLOCK TO SAVE BOOK");
       const { data } = await saveBook({
         variables: { bookToSave }
       });  
+      console.log(data);
      // const response = await saveBook(bookToSave, token);
 
       // if (!response.ok) {
