@@ -29,24 +29,12 @@ const LoginForm = () => {
       event.preventDefault();
       event.stopPropagation();
     }
-    console.log(userFormData);
     try {
-      console.log('IN THE TRY BLOCK')
       const { data } = await loginUser({
         variables: {...userFormData}
       });
-      console.log('LOGIN MUTATION WORKED');
       Auth.login(data.login.token);
-      console.log('AUTHORIZATION WORKED');
-      // const response = await loginUser(userFormData);
 
-      // if (!response.ok) {
-      //   throw new Error('something went wrong!');
-      // }
-
-      // const { token, user } = await response.json();
-      // console.log(user);
-      // Auth.login(token);
     } catch (err) {
       console.error(err);
       setShowAlert(true);

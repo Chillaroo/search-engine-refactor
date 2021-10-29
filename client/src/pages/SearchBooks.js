@@ -59,7 +59,7 @@ const SearchBooks = () => {
 
   // create function to handle saving a book to our database
   const handleSaveBook = async (bookId) => {
-    console.log({searchedBooks, bookId});
+
     // find the book in `searchedBooks` state by the matching id
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
 
@@ -74,7 +74,7 @@ const SearchBooks = () => {
       const { data } = await saveBook({
         variables: bookToSave
       });  
-      console.log(data);
+
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
     } catch (err) {
       console.error(err);

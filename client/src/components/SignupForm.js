@@ -29,7 +29,6 @@ const SignupForm = () => {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    console.log(userFormData);
 
     // check if form has everything (as per react-bootstrap docs)
     const form = event.currentTarget;
@@ -39,15 +38,15 @@ const SignupForm = () => {
     }
 
     try {
-      console.log('IN THE TRY BLOCK');
+   
       const { data } = await addUser({
         variables: {...userFormData}
       });
-      console.log("NEW USER DATA", data);
+    
 
       Auth.login(data.addUser.token);
 
-      console.log("NEW USER LOGGED IN", Auth.login(data.addUser.token));
+  
 
       // const response = await createUser(userFormData);
 
